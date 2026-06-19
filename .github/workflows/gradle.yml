@@ -43,6 +43,5 @@ jobs:
       - name: Build with Gradle
         env:
           JAVA_HOME: ${{ steps.gradle-java.outputs.path }}
-          PATH: ${{ steps.gradle-java.outputs.path }}/bin:${{ env.PATH }}
           ORG_GRADLE_JAVA_INSTALLATIONS_PATHS: ${{ steps.gradle-java.outputs.path }},${{ steps.compatibility-java.outputs.path }}
         run: ./gradlew clean build -PgenerateSources -PjavaCompatibilityVersion=${{ matrix.compatibility-java-version }}
