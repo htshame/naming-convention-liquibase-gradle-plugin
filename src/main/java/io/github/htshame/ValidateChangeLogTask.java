@@ -14,7 +14,10 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
 import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 
 import java.io.File;
 
@@ -25,6 +28,7 @@ import java.io.File;
  * This task is wired to the {@code check} lifecycle task by
  * {@link NamingConventionLiquibasePlugin}.
  */
+@DisableCachingByDefault(because = "Validation task - output is build success/failure, not cacheable artifacts")
 public abstract class ValidateChangeLogTask extends DefaultTask {
 
     private static final String INVALID_PATH = "Invalid path: ";
@@ -34,6 +38,7 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
      *
      * @return file property
      */
+    @PathSensitive(PathSensitivity.RELATIVE)
     @InputFile
     public abstract RegularFileProperty getPathToRulesFile();
 
@@ -43,6 +48,7 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
      * @return file property
      */
     @Optional
+    @PathSensitive(PathSensitivity.RELATIVE)
     @InputFile
     public abstract RegularFileProperty getPathToExclusionsFile();
 
@@ -51,6 +57,7 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
      *
      * @return directory property
      */
+    @PathSensitive(PathSensitivity.RELATIVE)
     @InputDirectory
     public abstract DirectoryProperty getChangeLogDirectory();
 
