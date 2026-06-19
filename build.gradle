@@ -10,9 +10,16 @@ plugins {
 group = 'io.github.htshame'
 version = '1.0.0'
 
+def compatibilityJavaVersion = providers.gradleProperty('javaCompatibilityVersion')
+        .map(Integer.&parseInt)
+        .getOrElse(11)
+
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(compatibilityJavaVersion)
+    }
     withJavadocJar()
 }
 
@@ -58,8 +65,15 @@ jar {
     }
 }
 
+tasks.withType(JavaCompile).configureEach {
+    options.release = 11
+}
+
 javadoc {
     source = sourceSets.main.allJava
+    javadocTool = javaToolchains.javadocToolFor {
+        languageVersion = JavaLanguageVersion.of(compatibilityJavaVersion)
+    }
     options.encoding = 'UTF-8'
 }
 
@@ -73,6 +87,9 @@ jacoco {
 }
 
 test {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(compatibilityJavaVersion)
+    }
     useJUnitPlatform()
     finalizedBy jacocoTestReport
 }

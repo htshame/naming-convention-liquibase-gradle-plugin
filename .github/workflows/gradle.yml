@@ -11,18 +11,38 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java-version: [ '11', '17', '21', '25' ]
+        include:
+          - gradle-java-version: '17'
+            compatibility-java-version: '11'
+          - gradle-java-version: '17'
+            compatibility-java-version: '17'
+          - gradle-java-version: '21'
+            compatibility-java-version: '21'
+          - gradle-java-version: '25'
+            compatibility-java-version: '25'
     permissions:
       contents: read
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK ${{ matrix.java-version }}
+      - name: Set up Gradle JDK ${{ matrix.gradle-java-version }}
+        id: gradle-java
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: ${{ matrix.gradle-java-version }}
+          distribution: 'temurin'
+
+      - name: Set up compatibility JDK ${{ matrix.compatibility-java-version }}
+        id: compatibility-java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.compatibility-java-version }}
           distribution: 'temurin'
 
       - name: Build with Gradle
-        run: ./gradlew clean build -PgenerateSources
+        env:
+          JAVA_HOME: ${{ steps.gradle-java.outputs.path }}
+          PATH: ${{ steps.gradle-java.outputs.path }}/bin:${{ env.PATH }}
+          ORG_GRADLE_JAVA_INSTALLATIONS_PATHS: ${{ steps.gradle-java.outputs.path }},${{ steps.compatibility-java.outputs.path }}
+        run: ./gradlew clean build -PgenerateSources -PjavaCompatibilityVersion=${{ matrix.compatibility-java-version }}
