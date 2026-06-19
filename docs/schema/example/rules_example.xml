@@ -1,0 +1,213 @@
+<rules xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="https://htshame.github.io/naming-convention-liquibase-maven-plugin/schema/ruleset/4.0/liquibase-naming-convention-4.0.xsd">
+
+    <!--
+    Checks that 'comment' tag exists in every changeSet.
+    Because 'rollback' tag is provided in non-mandatory 'requiredForChildTags' tag, this rule will also check that
+    'comment' tag is present inside child 'rollback' tag.
+    -->
+    <rule name="tag-must-exist">
+        <requiredTag>comment</requiredTag>
+        <requiredForChildTags>
+            <tag>rollback</tag>
+        </requiredForChildTags>
+    </rule>
+
+    <!--
+    Checks that the specified tag contains the required attribute.
+    Example:
+    Attribute 'remarks' must exist in tag '<createTable>'.
+    -->
+    <rule name="attr-must-exist-in-tag">
+        <tag>createTable</tag>
+        <requiredAttr>remarks</requiredAttr>
+    </rule>
+
+    <!--
+    Checks that specified attribute starts with specified value.
+    Will check that each `indexName` attribute of each `<createIndex>` tag starts with `idx_`.
+    -->
+    <rule name="attr-starts-with">
+        <tag>createIndex</tag>
+        <targetAttr>indexName</targetAttr>
+        <requiredPrefix>idx_</requiredPrefix>
+    </rule>
+
+    <!--
+    Checks that specified attribute starts with specified value if the certain attribute is present and has
+    certain value.
+    Will check that each `indexName` attribute of each `<createIndex>` tag starts with `idx_unique_` if
+    attribute `unique="true"` is present.
+    -->
+    <rule name="attr-starts-with-conditioned">
+        <tag>createIndex</tag>
+        <conditionAttr>unique</conditionAttr>
+        <conditionValue>true</conditionValue>
+        <targetAttr>indexName</targetAttr>
+        <requiredPrefix>idx_unique_</requiredPrefix>
+    </rule>
+
+    <!--
+    Checks that specified attribute does not start with specified value if the certain attribute is present and has
+    certain value.
+    Will check that each `indexName` attribute of each `<createIndex>` tag does not start with `idx_unique_`
+    if attribute `unique="true"` is present.
+    -->
+    <rule name="attr-not-starts-with-conditioned">
+        <tag>createIndex</tag>
+        <conditionAttr>unique</conditionAttr>
+        <conditionValue>true</conditionValue>
+        <targetAttr>indexName</targetAttr>
+        <forbiddenPrefix>idx_unique_</forbiddenPrefix>
+    </rule>
+
+    <!--
+    Checks that specified attribute ends with specified value.
+    Will check that each `constraintName` attribute of each `<addForeignKeyConstraint>` tag ends with `_fk`.
+    -->
+    <rule name="attr-ends-with">
+        <tag>addForeignKeyConstraint</tag>
+        <targetAttr>constraintName</targetAttr>
+        <requiredSuffix>_fk</requiredSuffix>
+    </rule>
+
+    <!--
+    Checks that specified attribute ends with specified value if the certain attribute is present and has
+    certain value.
+    Will check that each `indexName` attribute of each `<createIndex>` tag ends with `_unique` if
+    attribute `unique="true"` is present.
+    -->
+    <rule name="attr-ends-with-conditioned">
+        <tag>createIndex</tag>
+        <conditionAttr>unique</conditionAttr>
+        <conditionValue>true</conditionValue>
+        <targetAttr>indexName</targetAttr>
+        <requiredSuffix>_unique</requiredSuffix>
+    </rule>
+
+    <!--
+    Checks that specified attribute does not end with specified value if the certain attribute is present
+    and has certain value.
+    Will check that each `indexName` attribute of each `<createIndex>` tag does not end with `_unique`
+    if attribute `unique="true"` is present.
+    -->
+    <rule name="attr-not-ends-with-conditioned">
+        <tag>createIndex</tag>
+        <conditionAttr>unique</conditionAttr>
+        <conditionValue>true</conditionValue>
+        <targetAttr>indexName</targetAttr>
+        <forbiddenSuffix>_unique</forbiddenSuffix>
+    </rule>
+
+    <!--
+    Checks that hyphens '-' are not present in the changeSet at all.
+    Will check that hyphens '-' are not present in the changeSet at all, except for excluded attributes.
+    Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+    -->
+    <rule name="no-hyphens-in-attributes">
+        <excludedAttrs>
+            <attr>defaultValue</attr>
+            <attr>defaultValueComputed</attr>
+        </excludedAttrs>
+    </rule>
+
+    <!--
+    Checks that underscores are not present in the changeSet at all.
+    Will check that underscores `_` are not present in the changeSet at all, except for excluded attributes.
+    Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+    -->
+    <rule name="no-underscores-in-attributes">
+        <excludedAttrs>
+            <attr>defaultValue</attr>
+            <attr>defaultValueComputed</attr>
+        </excludedAttrs>
+    </rule>
+
+    <!--
+    Checks that uppercase characters are not present in the changeSet attributes at all.
+    Will check that uppercase characters are not present in the changeSet attributes at all,
+    except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+    -->
+    <rule name="no-uppercase-in-attributes">
+        <excludedAttrs>
+            <attr>defaultValue</attr>
+            <attr>defaultValueComputed</attr>
+        </excludedAttrs>
+    </rule>
+
+    <!--
+    Checks that lowercase characters are not present in the changeSet attributes at all.
+    Will check that lowercase characters are not present in the changeSet attributes at all,
+    except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+    -->
+    <rule name="no-lowercase-in-attributes">
+        <excludedAttrs>
+            <attr>defaultValue</attr>
+            <attr>defaultValueComputed</attr>
+        </excludedAttrs>
+    </rule>
+
+    <!--
+    Checks that spaces/line breaks/tabs are not present in the changeSet attributes at all.
+    Will check that spaces/line breaks/tabs are not present in the changeSet attributes at all,
+    except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+    -->
+    <rule name="no-spaces-in-attributes">
+        <excludedAttrs>
+            <attr>defaultValue</attr>
+            <attr>defaultValueComputed</attr>
+        </excludedAttrs>
+    </rule>
+
+    <!--
+    Checks that all changeLog files match the specified regular expression.
+    Example:
+    Each changeLog file name must match provided regular expression,
+    except file names specified in <excludedFileNames>.
+    changelog_01.xml - will pass.
+    changeLog22.yaml - will fail.
+    changelog-master.xml - will pass because it's excluded from the check.
+    -->
+    <rule name="changelog-file-name-must-match-regexp">
+        <fileNameRegexp>^changelog_\d+\.(xml|json|ya?ml)$</fileNameRegexp>
+        <excludedFileNames>
+            <fileName>changelog-master.xml</fileName>
+            <fileName>my_changeLog_01.yaml</fileName>
+        </excludedFileNames>
+    </rule>
+
+    <!--
+    Checks that changeLog file length is <= the number of lines provided in <linesLimit>.
+    ChangeLog file names provided in <excludedFileNames> will be excluded from the check.
+    -->
+    <rule name="changelog-file-lines-limit">
+        <linesLimit>1000</linesLimit>
+        <excludedFileNames>
+            <fileName>changelog-01.xml</fileName>
+            <fileName>changelog-10.xml</fileName>
+        </excludedFileNames>
+    </rule>
+
+    <!--
+    Checks that changeLog file does not contain tabs.
+    -->
+    <rule name="no-tabs-in-changelog"/>
+
+    <!--
+    Checks that changeLog file does not contain trailing spaces or trailing tabs.
+    -->
+    <rule name="no-trailing-spaces-in-changelog"/>
+
+    <!--
+    Checks that changeLog file ends with a newline character.
+    -->
+    <rule name="changelog-must-end-with-newline"/>
+
+    <!--
+    Checks that the specified changeLog file does not contain the specified tag.
+    -->
+    <rule name="tag-must-not-exist-in-changelog">
+        <tag>includeAll</tag>
+        <targetFileName>changelog-master.xml</targetFileName>
+    </rule>
+</rules>

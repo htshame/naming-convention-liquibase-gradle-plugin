@@ -1,1 +1,521 @@
 # naming-convention-liquibase-gradle-plugin
+
+### You use [Liquibase](https://github.com/liquibase/liquibase)?
+
+### You work with other developers whom you can't really control with PR reviews?
+
+### Tired of inconsistent names of tables, indexes, foreign keys and other parts of the database schema?
+
+Just use <b>naming-convention-liquibase-gradle-plugin</b>!
+
+This plugin allows you to create a set of rules and enforce them.
+
+- If someone names the index 'customer_external_id_idx' instead of 'idx_customer_external_id' (or vice versa), the build
+  will fail!
+
+- If someone names the table 'customer-metadata' instead of 'customer_metadata' (or vice versa), the build will fail!
+
+- If someone does not write `<comment>` to the changeSet, the build will fail!
+
+- If someone... - well, you get the point!
+
+---
+
+# How to use it?
+
+1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`.
+2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`. <br>
+Exclusions file contents could be generated automatically by setting plugin config parameter `shouldGenerateExclusions` to `true`, default value is `false`.
+3. Provide the path to the directory with Liquibase XML changeLogs in `changeLogDirectory`.
+4. Provide `false` in `shouldFailBuild` if you want to just see the warnings.
+5. Put this into your `build.gradle`:
+    ```groovy
+    plugins {
+        id 'io.github.htshame.naming-convention-liquibase' version '1.0.0'
+    }
+
+    validateLiquibaseChangeLog {
+        pathToRulesFile = file("${projectDir}/src/main/resources/liquibaseNaming/ruleset.xml")
+        pathToExclusionsFile = file("${projectDir}/src/main/resources/liquibaseNaming/exclusions.xml")
+        changeLogDirectory = file("${projectDir}/src/main/resources/db")
+        changeLogFormat = 'xml'
+        shouldFailBuild = true
+        shouldGenerateExclusions = true
+    }
+    ```
+6. Run your build (`./gradlew check`).
+
+---
+
+## Available rules:
+
+1. [tag-must-exist](#tag-must-exist)
+1. [attr-must-exist-in-tag](#attr-must-exist-in-tag)
+1. [attr-starts-with](#attr-starts-with)
+1. [attr-starts-with-conditioned](#attr-starts-with-conditioned)
+1. [attr-not-starts-with-conditioned](#attr-not-starts-with-conditioned)
+1. [attr-ends-with](#attr-ends-with)
+1. [attr-ends-with-conditioned](#attr-ends-with-conditioned)
+1. [attr-not-ends-with-conditioned](#attr-not-ends-with-conditioned)
+1. [no-hyphens-in-attributes](#no-hyphens-in-attributes)
+1. [no-underscores-in-attributes](#no-underscores-in-attributes)
+1. [no-uppercase-in-attributes](#no-uppercase-in-attributes)
+1. [no-lowercase-in-attributes](#no-lowercase-in-attributes)
+1. [no-spaces-in-attributes](#no-spaces-in-attributes)
+1. [changelog-file-name-must-match-regexp](#changelog-file-name-must-match-regexp)
+1. [changelog-file-lines-limit](#changelog-file-lines-limit)
+1. [no-tabs-in-changelog](#no-tabs-in-changelog)
+1. [no-trailing-spaces-in-changelog](#no-trailing-spaces-in-changelog)
+1. [changelog-must-end-with-newline](#changelog-must-end-with-newline)
+1. [tag-must-not-exist-in-changelog](#tag-must-not-exist-in-changelog)
+
+---
+
+### tag-must-exist
+
+Checks that specified tag exists in every changeSet.
+
+Example:
+
+```xml
+<rule name="tag-must-exist">
+    <requiredTag>comment</requiredTag>
+    <requiredForChildTags>
+        <tag>rollback</tag>
+    </requiredForChildTags>
+</rule>
+```
+
+Will check that `<comment>` tag is present inside every changeSet, including child `<rollback>`tag.
+
+---
+
+### attr-must-exist-in-tag
+
+Checks that required attribute exists in tag.
+
+Example:
+
+```xml
+<rule name="attr-must-exist-in-tag">
+    <tag>createTable</tag>
+    <requiredAttr>remarks</requiredAttr>
+</rule>
+```
+
+Will check that required attribute `remarks` exists in the specified tag `createTable`.
+
+---
+
+### attr-starts-with
+
+Checks that specified attribute starts with specified value.
+
+Example:
+
+```xml
+<rule name="attr-starts-with">
+    <tag>createIndex</tag>
+    <targetAttr>indexName</targetAttr>
+    <requiredPrefix>idx_</requiredPrefix>
+</rule>
+```
+
+Will check that each `indexName` attribute of each `<createIndex>` tag starts with `idx_`.
+
+---
+
+### attr-starts-with-conditioned
+
+Checks that specified attribute starts with specified value if the certain attribute is present and has certain value.
+
+Example:
+
+```xml
+<rule name="attr-starts-with-conditioned">
+    <tag>createIndex</tag>
+    <conditionAttr>unique</conditionAttr>
+    <conditionValue>true</conditionValue>
+    <targetAttr>indexName</targetAttr>
+    <requiredPrefix>idx_unique_</requiredPrefix>
+</rule>
+```
+
+Will check that each `indexName` attribute of each `<createIndex>` tag starts with `idx_unique_` if attribute `unique="true"`
+is present.
+
+---
+
+### attr-not-starts-with-conditioned
+
+Checks that specified attribute does not start with specified value if the certain attribute is present and has certain value.
+
+Example:
+
+```xml
+<rule name="attr-not-starts-with-conditioned">
+    <tag>createIndex</tag>
+    <conditionAttr>unique</conditionAttr>
+    <conditionValue>true</conditionValue>
+    <targetAttr>indexName</targetAttr>
+    <forbiddenPrefix>idx_unique_</forbiddenPrefix>
+</rule>
+```
+
+Will check that each `indexName` attribute of each `<createIndex>` tag does not start with `idx_unique_` if attribute `unique="true"`
+is present.
+
+---
+
+### attr-ends-with
+
+Checks that specified attribute ends with specified value.
+
+Example:
+
+```xml
+<rule name="attr-ends-with">
+    <tag>addForeignKeyConstraint</tag>
+    <targetAttr>constraintName</targetAttr>
+    <requiredSuffix>_fk</requiredSuffix>
+</rule>
+```
+
+Will check that each `constraintName` attribute of each `<addForeignKeyConstraint>` tag ends with `_fk`.
+
+---
+
+### attr-ends-with-conditioned
+
+Checks that specified attribute ends with specified value if the certain attribute is present and has certain value.
+
+Example:
+
+```xml
+<rule name="attr-ends-with-conditioned">
+    <tag>createIndex</tag>
+    <conditionAttr>unique</conditionAttr>
+    <conditionValue>true</conditionValue>
+    <targetAttr>indexName</targetAttr>
+    <requiredSuffix>_unique</requiredSuffix>
+</rule>
+```
+
+Will check that each `indexName` attribute of each `<createIndex>` tag ends with `_unique` if attribute `unique="true"`
+is present.
+
+---
+
+### attr-not-ends-with-conditioned
+
+Checks that specified attribute does not end with specified value if the certain attribute is present and has certain value.
+
+Example:
+
+```xml
+<rule name="attr-not-ends-with-conditioned">
+    <tag>createIndex</tag>
+    <conditionAttr>unique</conditionAttr>
+    <conditionValue>true</conditionValue>
+    <targetAttr>indexName</targetAttr>
+    <forbiddenSuffix>_unique</forbiddenSuffix>
+</rule>
+```
+
+Will check that each `indexName` attribute of each `<createIndex>` tag does not end with `_unique` if attribute `unique="true"`
+is present.
+
+---
+
+### no-hyphens-in-attributes
+
+Checks that hyphens are not present in the changeSet at all.
+
+Example:
+
+```xml
+<rule name="no-hyphens-in-attributes">
+    <excludedAttrs>
+        <attr>defaultValue</attr>
+        <attr>defaultValueComputed</attr>
+    </excludedAttrs>
+</rule>
+```
+
+Will check that hyphens `-` are not present in the changeSet at all, except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+
+---
+
+### no-underscores-in-attributes
+
+Checks that underscores are not present in the changeSet at all.
+
+Example:
+
+```xml
+<rule name="no-underscores-in-attributes">
+    <excludedAttrs>
+        <attr>defaultValue</attr>
+        <attr>defaultValueComputed</attr>
+    </excludedAttrs>
+</rule>
+```
+
+Will check that underscores `_` are not present in the changeSet at all, except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+
+---
+
+### no-uppercase-in-attributes
+
+Checks that uppercase characters are not present in the changeSet attributes at all.
+
+Example:
+
+```xml
+<rule name="no-uppercase-in-attributes">
+    <excludedAttrs>
+        <attr>defaultValue</attr>
+        <attr>defaultValueComputed</attr>
+    </excludedAttrs>
+</rule>
+```
+
+Will check that uppercase characters are not present in the changeSet attributes at all, except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+
+---
+
+### no-lowercase-in-attributes
+
+Checks that lowercase characters are not present in the changeSet attributes at all.
+
+Example:
+
+```xml
+<rule name="no-lowercase-in-attributes">
+    <excludedAttrs>
+        <attr>defaultValue</attr>
+        <attr>defaultValueComputed</attr>
+    </excludedAttrs>
+</rule>
+```
+
+Will check that lowercase characters are not present in the changeSet attributes at all, except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+
+---
+
+### no-spaces-in-attributes
+
+Checks that spaces/line breaks/tabs are not present in the changeSet attributes at all.
+
+Example:
+
+```xml
+<rule name="no-spaces-in-attributes">
+    <excludedAttrs>
+        <attr>defaultValue</attr>
+        <attr>defaultValueComputed</attr>
+    </excludedAttrs>
+</rule>
+```
+
+Will check that spaces/line breaks/tabs are not present in the changeSet attributes at all, except for excluded attributes. Attributes `defaultValue` and `defaultValueComputed` will be ignored.
+
+---
+
+### changelog-file-name-must-match-regexp
+
+Checks that all changeLog files match the specified regular expression.
+
+Example:
+
+```xml
+<rule name="changelog-file-name-must-match-regexp">
+    <fileNameRegexp>^changelog_\d+\.(xml|json|ya?ml)$</fileNameRegexp>
+    <excludedFileNames>
+        <fileName>changelog-master.xml</fileName>
+        <fileName>my_changeLog_01.yaml</fileName>
+    </excludedFileNames>
+</rule>
+```
+
+Will check that each changeLog file matches the specified regular expression,
+excluding file names provided in `<excludedFileNames>`.
+
+---
+
+### changelog-file-lines-limit
+
+Checks that the length of each changeLog file is not longer than the number specified in `linesLimit`.
+
+Example:
+
+```xml
+<rule name="changelog-file-lines-limit">
+    <linesLimit>1000</linesLimit>
+    <excludedFileNames>
+        <fileName>changelog-01.xml</fileName>
+        <fileName>changelog-10.xml</fileName>
+    </excludedFileNames>
+</rule>
+```
+
+Will check that each changeLog file length is <= `1000` specified in `<linesLimit>`,
+excluding changeLog file names provided in `<excludedFileNames>`.
+
+---
+
+### no-tabs-in-changelog
+
+Checks that file does not contain tab characters.
+
+Example:
+
+```xml
+<rule name="no-tabs-in-changelog"/>
+```
+
+Will check that file does not contain tab characters.
+
+---
+
+### no-trailing-spaces-in-changelog
+
+Checks that file does not contain trailing spaces or trailing tabs.
+
+Example:
+
+```xml
+<rule name="no-trailing-spaces-in-changelog"/>
+```
+
+Will check that file does not contain trailing spaces or trailing tabs.
+
+---
+
+### changelog-must-end-with-newline
+
+Checks that file ends with a newline character.
+
+Example:
+
+```xml
+<rule name="changelog-must-end-with-newline"/>
+```
+
+Will check that file ends with a newline character.
+
+---
+
+### tag-must-not-exist-in-changelog
+
+Checks that the specified changeLog does not contain the specified tag.
+
+Example:
+
+```xml
+<rule name="tag-must-not-exist-in-changelog">
+    <tag>includeAll</tag>
+    <targetFileName>changelog-master.xml</targetFileName>
+</rule>
+```
+
+Will check that file `changelog-master.xml` does not contain `includeAll` tags.
+
+---
+
+## Exclusions
+
+You can always add an exclusion to the set of rules. Create a separate `exclusions.xml` (or give it another name).
+
+### Available exclusions:
+
+1. [exclude a specific rule for a given file](#exclude-a-specific-rule-for-a-given-file)
+1. [exclude a specific rule for a given changeLog](#exclude-a-specific-rule-for-a-given-changeLog)
+1. [exclude all rules for a given file](#exclude-all-rules-for-a-given-file)
+1. [exclude a specific rule for a specific changeSet](#exclude-a-specific-rule-for-a-specific-changeSet)
+1. [exclude all rules for a specific changeSet](#exclude-all-rules-for-a-specific-changeSet)
+
+---
+
+### exclude a specific rule for a given file
+
+To exclude the provided rule for the provided file use:
+
+```xml
+<fileExclusion fileName="changelog_01.xml" rule="no-underscores-in-attributes"/>
+```
+
+Rule `no-underscores-in-attributes` will not be applied to `changelog_01.xml`.
+
+---
+
+### exclude a specific rule for a given changeLog
+
+To exclude the provided rule for the provided changeLog use:
+
+```xml
+<changeLogExclusion fileName="changelog-master.xml" rule="tag-must-not-exist-in-changelog"/>
+```
+
+Rule `tag-must-not-exist-in-changelog` will not be applied to `changelog-master.xml`.
+
+---
+
+### exclude all rules for a given file
+
+To exclude all rules for the provided file use:
+
+```xml
+<fileExclusion fileName="changelog_01.xml" rule="*"/>
+```
+
+Not a single rule will be applied to `changelog_01.xml`. This file will be ignored.
+
+---
+
+### exclude a specific rule for a specific changeSet
+
+To exclude the provided rule for the provided changeSet
+
+```xml
+<changeSetExclusion fileName="changelog_04.xml"
+                    changeSetId="changelog_04-1" changeSetAuthor="test"
+                    rule="tag-must-exist"/>
+```
+
+Rule `tag-must-exist` will not be applied to the change set with `id=changelog_04_1`, `author=test` inside `changelog_04.xml`.
+
+---
+
+### exclude all rules for a specific changeSet
+
+To exclude all rules for the provided changeSet
+
+```xml
+<changeSetExclusion fileName="changelog_04.xml"
+                    changeSetId="changelog_04-1" changeSetAuthor="test"
+                    rule="*"/>
+```
+
+Not a single rule will be applied to the change set with `id=changelog_04_1`, `author=test` inside `changelog_04.xml`.
+This changeSet will be ignored.
+
+---
+
+### Exclusions file generation
+
+Exclusions file contents could be generated automatically by setting plugin config parameter `shouldGenerateExclusions` to `true`, default value is `false`.
+
+---
+
+## Note: requires Java 11 or later
+### Supported changeLog formats: XML, YAML/YML, JSON
+
+---
+
+License
+[Apache 2.0 License.](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/LICENSE)
+
+[Link](https://github.com/htshame/naming-convention-liquibase-gradle-plugin) to the code repository.
+
+Version [Changelog](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/CHANGELOG.md).

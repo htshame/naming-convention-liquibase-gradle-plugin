@@ -64,12 +64,12 @@ javadoc {
 }
 
 checkstyle {
-    toolVersion = '10.12.4'
+    toolVersion = '10.25.0'
     configFile = file('config/checkstyle/checkstyle.xml')
 }
 
 jacoco {
-    toolVersion = '0.8.11'
+    toolVersion = '0.8.14'
 }
 
 test {
@@ -84,6 +84,20 @@ jacocoTestReport {
         html.required = true
     }
 }
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.21
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
 
 // Equivalent to the 'ossrh' Maven profile.
 // Sign artifacts when signingKey + signingPassword are provided (in-memory PGP),
