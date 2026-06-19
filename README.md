@@ -31,7 +31,7 @@ Exclusions file contents could be generated automatically by setting plugin conf
 5. Put this into your `build.gradle`:
     ```groovy
     plugins {
-        id 'io.github.htshame.naming-convention-liquibase' version '1.0.0'
+        id 'io.github.htshame.naming-convention-liquibase-gradle-plugin' version '1.0'
     }
 
     validateLiquibaseChangeLog {

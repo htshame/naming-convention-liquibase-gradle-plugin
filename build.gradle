@@ -49,7 +49,7 @@ gradlePlugin {
     vcsUrl = 'https://github.com/htshame/naming-convention-liquibase-gradle-plugin.git'
     plugins {
         namingConventionLiquibase {
-            id = 'io.github.htshame.naming-convention-liquibase'
+            id = 'io.github.htshame.naming-convention-liquibase-gradle-plugin'
             displayName = 'Naming Convention Liquibase Gradle Plugin'
             description = 'A lightweight Gradle plugin for validating XML, YAML/YML, JSON Liquibase changeLog' +
                     ' files against a customizable set of structural and content rules.' +
