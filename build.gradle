@@ -8,7 +8,8 @@ plugins {
 }
 
 group = 'io.github.htshame'
-version = '1.0.0'
+version = '1.0'
+def releaseProfile = project.hasProperty('release')
 
 def compatibilityJavaVersion = providers.gradleProperty('javaCompatibilityVersion')
         .map(Integer.&parseInt)
@@ -130,7 +131,13 @@ check.dependsOn jacocoTestCoverageVerification
 afterEvaluate {
     def hasInMemoryKey = project.hasProperty('signingKey') && project.hasProperty('signingPassword')
     def hasKeyring = project.hasProperty('signing.keyId')
-    if (hasInMemoryKey || hasKeyring) {
+    if (releaseProfile && !(hasInMemoryKey || hasKeyring)) {
+        throw new GradleException(
+                "Release profile is enabled but signing credentials are missing. " +
+                        "Provide signingKey + signingPassword or configure signing.keyId."
+        )
+    }
+    if (releaseProfile && (hasInMemoryKey || hasKeyring)) {
         signing {
             if (hasInMemoryKey) {
                 useInMemoryPgpKeys(
@@ -141,4 +148,12 @@ afterEvaluate {
             sign publishing.publications
         }
     }
+}
+
+tasks.withType(Sign).configureEach {
+    onlyIf { releaseProfile }
+}
+
+tasks.named('publishPlugins') {
+    onlyIf { releaseProfile }
 }
