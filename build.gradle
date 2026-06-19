@@ -13,13 +13,13 @@ version = '1.0.0'
 def compatibilityJavaVersion = providers.gradleProperty('javaCompatibilityVersion')
         .map(Integer.&parseInt)
         .getOrElse(11)
-def testJavaVersion = Math.max(compatibilityJavaVersion, 17)
+def buildJavaVersion = Math.max(compatibilityJavaVersion, JavaVersion.current().majorVersion.toInteger())
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
     toolchain {
-        languageVersion = JavaLanguageVersion.of(compatibilityJavaVersion)
+        languageVersion = JavaLanguageVersion.of(buildJavaVersion)
     }
     withJavadocJar()
 }
@@ -72,14 +72,14 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('compileTestJava', JavaCompile) {
     javaCompiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(testJavaVersion)
+        languageVersion = JavaLanguageVersion.of(buildJavaVersion)
     }
 }
 
 javadoc {
     source = sourceSets.main.allJava
     javadocTool = javaToolchains.javadocToolFor {
-        languageVersion = JavaLanguageVersion.of(compatibilityJavaVersion)
+        languageVersion = JavaLanguageVersion.of(buildJavaVersion)
     }
     options.encoding = 'UTF-8'
 }
@@ -95,7 +95,7 @@ jacoco {
 
 test {
     javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(testJavaVersion)
+        languageVersion = JavaLanguageVersion.of(buildJavaVersion)
     }
     useJUnitPlatform()
     finalizedBy jacocoTestReport
