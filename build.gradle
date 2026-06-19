@@ -13,7 +13,7 @@ version = '1.0.0'
 def compatibilityJavaVersion = providers.gradleProperty('javaCompatibilityVersion')
         .map(Integer.&parseInt)
         .getOrElse(11)
-def testJavaVersion = Math.max(compatibilityJavaVersion, 17)
+def testJavaVersion = Math.max(compatibilityJavaVersion, JavaVersion.current().majorVersion.toInteger())
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
