@@ -45,7 +45,7 @@ Exclusions file contents could be generated automatically by setting plugin conf
         shouldGenerateExclusions = true
     }
     ```
-6. Run your build (`./gradlew check`).
+6. Run your build.
 
 ---
 
