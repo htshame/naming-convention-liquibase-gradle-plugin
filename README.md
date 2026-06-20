@@ -19,6 +19,8 @@ This plugin allows you to create a set of rules and enforce them.
 
 - If someone... - well, you get the point!
 
+**Maven** version is available here: [naming-convention-liquibase-maven-plugin](https://htshame.github.io/naming-convention-liquibase-maven-plugin/)
+
 ---
 
 # How to use it?
