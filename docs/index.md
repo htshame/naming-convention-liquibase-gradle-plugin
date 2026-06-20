@@ -1,5 +1,3 @@
-# naming-convention-liquibase-gradle-plugin
-
 ### You use [Liquibase](https://github.com/liquibase/liquibase)?
 
 ### You work with other developers whom you can't really control with PR reviews?
@@ -25,11 +23,10 @@ This plugin allows you to create a set of rules and enforce them.
 
 # How to use it?
 
-1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`.
-2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`. <br>
-Exclusions file contents could be generated automatically by setting plugin config parameter `shouldGenerateExclusions` to `true`, default value is `false`.
-3. Provide the path to the directory with Liquibase XML changeLogs in `changeLogDirectory`.
-4. Provide `false` in `shouldFailBuild` if you want to just see the warnings.
+1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `<pathToRulesFile>`.
+2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `<pathToExclusionsFile>`.
+3. Provide the path to the directory with Liquibase XML changeLogs in `<changeLogDirectory>`.
+4. Provide `false` in `<shouldFailBuild>` if you want to just see the warnings.
 5. Put this into your `build.gradle`:
     ```groovy
     plugins {
@@ -480,8 +477,8 @@ Not a single rule will be applied to `changelog_01.xml`. This file will be ignor
 To exclude the provided rule for the provided changeSet
 
 ```xml
-<changeSetExclusion fileName="changelog_04.xml"
-                    changeSetId="changelog_04-1" changeSetAuthor="test"
+<changeSetExclusion fileName="changelog_04.xml" 
+                    changeSetId="changelog_04-1" changeSetAuthor="test" 
                     rule="tag-must-exist"/>
 ```
 
@@ -506,7 +503,7 @@ This changeSet will be ignored.
 
 ### Exclusions file generation
 
-Exclusions file contents could be generated automatically by setting plugin config parameter `shouldGenerateExclusions` to `true`, default value is `false`.
+Exclusions file contents could be generated automatically by setting plugin config parameter `<shouldGenerateExclusions>` to `true`, default value is `false`.
 
 ---
 
