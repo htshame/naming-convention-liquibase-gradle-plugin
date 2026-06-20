@@ -25,12 +25,12 @@ This plugin allows you to create a set of rules and enforce them.
 
 # How to use it?
 
-1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`.
-2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`. <br>
-Exclusions file contents could be generated automatically by setting plugin config parameter `shouldGenerateExclusions` to `true`, default value is `false`.
+1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`.
+2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`.
 3. Provide the path to the directory with Liquibase XML changeLogs in `changeLogDirectory`.
 4. Provide `false` in `shouldFailBuild` if you want to just see the warnings.
-5. Put this into your `build.gradle`:
+5. Provide `true` in `shouldGenerateExclusions` if you want your exclusions file to be generated automatically.
+6. Put this into your `build.gradle`:
     ```groovy
     plugins {
         id 'io.github.htshame.naming-convention-liquibase-gradle-plugin' version '1.0'
