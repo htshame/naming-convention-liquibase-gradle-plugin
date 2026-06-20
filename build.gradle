@@ -87,7 +87,7 @@ javadoc {
 
 checkstyle {
     toolVersion = '10.25.0'
-    configFile = file('config/checkstyle/checkstyle.xml')
+    configFile = file('checkstyle/checkstyle.xml')
 }
 
 jacoco {
