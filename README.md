@@ -25,8 +25,8 @@ This plugin allows you to create a set of rules and enforce them.
 
 # How to use it?
 
-1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `<pathToRulesFile>`. Or fetch your rules file from remote URL by specifying `<rulesFileUrl>` parameter instead.
-2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `<pathToExclusionsFile>`. Or fetch your exclusions file from remote URL by specifying `<exclusionsFileUrl>` parameter instead.
+1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`. Or fetch your rules file from remote URL by specifying `rulesFileUrl` parameter instead.
+2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`. Or fetch your exclusions file from remote URL by specifying `exclusionsFileUrl` parameter instead.
 3. Provide the path to the directory with Liquibase XML changeLogs in `changeLogDirectory`.
 4. Provide `false` in `shouldFailBuild` if you want to just see the warnings.
 5. Provide `true` in `shouldGenerateExclusions` if you want your exclusions file to be generated automatically.
@@ -40,12 +40,12 @@ This plugin allows you to create a set of rules and enforce them.
         // path to file with naming rules
         pathToRulesFile = file("${projectDir}/src/main/resources/liquibaseNaming/ruleset.xml")
         // OR provide URL to file with naming rules
-        // rulesFileUrl = https://raw.githubusercontent.com/htshame/naming-convention-liquibase-gradle-plugin/refs/heads/main/docs/schema/example/rules_example.xml
+        // rulesFileUrl = 'https://raw.githubusercontent.com/htshame/naming-convention-liquibase-gradle-plugin/refs/heads/main/docs/schema/example/rules_example.xml'
    
         // path to file with exclusion rules
         pathToExclusionsFile = file("${projectDir}/src/main/resources/liquibaseNaming/exclusions.xml")
         // OR provide URL to file with exclusion rules
-        // exclusionsFileUrl = https://raw.githubusercontent.com/htshame/naming-convention-liquibase-gradle-plugin/refs/heads/main/docs/schema/example/exclusions_example.xml
+        // exclusionsFileUrl = 'https://raw.githubusercontent.com/htshame/naming-convention-liquibase-gradle-plugin/refs/heads/main/docs/schema/example/exclusions_example.xml'
    
         // path to your changeLog directory
         changeLogDirectory = file("${projectDir}/src/main/resources/db")
