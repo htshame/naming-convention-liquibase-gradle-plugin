@@ -247,6 +247,15 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
      * - changeLog format is supported;
      */
     private void validateInput() {
+        if (getPathToRulesFile().isPresent() == getRulesFileUrl().isPresent()) {
+            throw new GradleException(
+                    "Exactly one of 'pathToRulesFile' or 'rulesFileUrl' parameters must be present");
+        }
+        if (getPathToExclusionsFile().isPresent() && getExclusionsFileUrl().isPresent()) {
+            throw new GradleException(
+                    "Only one of 'pathToExclusionsFile' or 'exclusionsFileUrl' parameters must be present");
+        }
+
         final File changeLogDir = getChangeLogDirectory().getAsFile().get();
 
         if (!changeLogDir.isDirectory()) {
@@ -263,14 +272,6 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
             if (!exclusionsFile.exists()) {
                 throw new GradleException(INVALID_PATH + exclusionsFile);
             }
-        }
-        if (getPathToRulesFile().isPresent() == getRulesFileUrl().isPresent()) {
-            throw new GradleException(
-                    "Exactly one of 'pathToRulesFile' or 'rulesFileUrl' parameters must be present");
-        }
-        if (getPathToExclusionsFile().isPresent() && getExclusionsFileUrl().isPresent()) {
-            throw new GradleException(
-                    "Only one of 'pathToExclusionsFile' or 'exclusionsFileUrl' parameters must be present");
         }
         try {
             ChangeLogFormatEnum.fromValue(getChangeLogFormat().get().toLowerCase());
