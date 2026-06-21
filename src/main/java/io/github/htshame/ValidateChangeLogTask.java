@@ -3,6 +3,7 @@ package io.github.htshame;
 import io.github.htshame.core.PluginConfig;
 import io.github.htshame.core.ValidateChangeLogService;
 import io.github.htshame.enums.ChangeLogFormatEnum;
+import io.github.htshame.enums.PluginTypeEnum;
 import io.github.htshame.exception.ValidateChangeLogException;
 import io.github.htshame.log.PluginLogger;
 import org.gradle.api.DefaultTask;
@@ -20,6 +21,8 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.work.DisableCachingByDefault;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * {@code validateLiquibaseChangeLog} task executor.
@@ -34,12 +37,20 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
     private static final String INVALID_PATH = "Invalid path: ";
 
     /**
-     * Path to the XML file with rules. <b>Required.</b>
+     * Default constructor.
+     */
+    public ValidateChangeLogTask() {
+
+    }
+
+    /**
+     * Path to the XML file with rules. Exactly one of {@code pathToRulesFile} or {@code rulesFileUrl} must be set.
      *
      * @return file property
      */
     @PathSensitive(PathSensitivity.RELATIVE)
     @InputFile
+    @Optional
     public abstract RegularFileProperty getPathToRulesFile();
 
     /**
@@ -97,6 +108,24 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
     public abstract Property<String> getPluginVersion();
 
     /**
+     * Rules file URL. Exactly one of {@code pathToRulesFile} or {@code rulesFileUrl} must be set. <b>Optional</b>
+     *
+     * @return url.
+     */
+    @Input
+    @Optional
+    public abstract Property<String> getRulesFileUrl();
+
+    /**
+     * Exclusions file URL. <b>Optional</b>
+     *
+     * @return url.
+     */
+    @Input
+    @Optional
+    public abstract Property<String> getExclusionsFileUrl();
+
+    /**
      * Validates the Liquibase changeLog files using the configured rules and exclusions.
      * <p>
      * Fails the build (throws {@link GradleException}) when violations are found and
@@ -107,16 +136,25 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
         validateInput();
         configReminder();
 
+        final URL rulesFileUrl = prepareUrl(getRulesFileUrl());
+        final URL exclusionsFileUrl = prepareUrl(getExclusionsFileUrl());
+
+        final File rulesFile = getPathToRulesFile().isPresent()
+                ? getPathToRulesFile().getAsFile().get() : null;
         final File exclusionsFile = getPathToExclusionsFile().isPresent()
                 ? getPathToExclusionsFile().getAsFile().get() : null;
 
-        final PluginConfig config = new PluginConfig(
-                getChangeLogFormat().get(),
-                getPathToRulesFile().getAsFile().get(),
-                exclusionsFile,
-                getChangeLogDirectory().getAsFile().get(),
-                getShouldGenerateExclusions().get(),
-                getPluginVersion().get());
+        final PluginConfig config = PluginConfig.builder()
+                .changeLogFormat(getChangeLogFormat().get())
+                .pathToRulesFile(rulesFile)
+                .rulesFileUrl(rulesFileUrl)
+                .pathToExclusionsFile(exclusionsFile)
+                .exclusionsFileUrl(exclusionsFileUrl)
+                .changeLogDirectory(getChangeLogDirectory().getAsFile().get())
+                .shouldGenerateExclusions(getShouldGenerateExclusions().get())
+                .pluginVersion(getPluginVersion().get())
+                .pluginType(PluginTypeEnum.GRADLE)
+                .build();
 
         final PluginLogger logger = preparePluginLogger();
         final ValidateChangeLogService validateChangeLogService =
@@ -130,6 +168,22 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
             }
             logger.warn(e.getMessage()
                     + " Build will not fail because shouldFailBuild=false");
+        }
+    }
+
+    /**
+     * Prepare URL property.
+     *
+     * @param urlProperty - URL input.
+     * @return URL object.
+     */
+    private URL prepareUrl(final Property<String> urlProperty) {
+        try {
+            return urlProperty.isPresent()
+                    ? new URL(urlProperty.get()) : null;
+        } catch (MalformedURLException e) {
+            getLogger().error("Error parsing URL: {}", urlProperty.get(), e);
+            throw new GradleException("Error parsing URL: " + urlProperty.get(), e);
         }
     }
 
@@ -193,14 +247,25 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
      * - changeLog format is supported;
      */
     private void validateInput() {
+        if (getPathToRulesFile().isPresent() == getRulesFileUrl().isPresent()) {
+            throw new GradleException(
+                    "Exactly one of 'pathToRulesFile' or 'rulesFileUrl' parameters must be present");
+        }
+        if (getPathToExclusionsFile().isPresent() && getExclusionsFileUrl().isPresent()) {
+            throw new GradleException(
+                    "Only one of 'pathToExclusionsFile' or 'exclusionsFileUrl' parameters must be present");
+        }
+
         final File changeLogDir = getChangeLogDirectory().getAsFile().get();
-        final File rulesFile = getPathToRulesFile().getAsFile().get();
 
         if (!changeLogDir.isDirectory()) {
             throw new GradleException(INVALID_PATH + changeLogDir);
         }
-        if (!rulesFile.exists()) {
-            throw new GradleException(INVALID_PATH + rulesFile);
+        if (getPathToRulesFile().isPresent()) {
+            final File rulesFile = getPathToRulesFile().getAsFile().get();
+            if (!rulesFile.exists()) {
+                throw new GradleException(INVALID_PATH + rulesFile);
+            }
         }
         if (getPathToExclusionsFile().isPresent()) {
             final File exclusionsFile = getPathToExclusionsFile().getAsFile().get();
