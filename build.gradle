@@ -1,9 +1,8 @@
 plugins {
     id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '1.2.1'
+    id 'com.gradle.plugin-publish' version '2.1.1'
     id 'checkstyle'
     id 'jacoco'
-    id 'signing'
     id 'maven-publish'
 }
 
@@ -124,34 +123,8 @@ jacocoTestCoverageVerification {
 
 check.dependsOn jacocoTestCoverageVerification
 
-// Equivalent to the 'ossrh' Maven profile.
-// Sign artifacts when signingKey + signingPassword are provided (in-memory PGP),
-// or when signing.keyId is provided (GPG keyring agent).
-// Typically activated in CI for release builds.
-afterEvaluate {
-    def hasInMemoryKey = project.hasProperty('signingKey') && project.hasProperty('signingPassword')
-    def hasKeyring = project.hasProperty('signing.keyId')
-    if (releaseProfile && !(hasInMemoryKey || hasKeyring)) {
-        throw new GradleException(
-                "Release profile is enabled but signing credentials are missing. " +
-                        "Provide signingKey + signingPassword or configure signing.keyId."
-        )
-    }
-    if (releaseProfile && (hasInMemoryKey || hasKeyring)) {
-        signing {
-            if (hasInMemoryKey) {
-                useInMemoryPgpKeys(
-                        project.property('signingKey') as String,
-                        project.property('signingPassword') as String
-                )
-            }
-            sign publishing.publications
-        }
-    }
-}
-
-tasks.withType(Sign).configureEach {
-    onlyIf { releaseProfile }
+tasks.register("deployToRemote") {
+    dependsOn("publishPlugins")
 }
 
 tasks.named('publishPlugins') {
