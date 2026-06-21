@@ -81,10 +81,10 @@ public abstract class ValidateChangeLogExtension {
      */
     public abstract Property<String> getRulesFileUrl();
 
-    /**
-     * Get exclusions file URL.
-     *
-     * @return url.
-     */
+/**
+ * Exclusions file URL. Only one of {@code pathToExclusionsFile} or {@code exclusionsFileUrl} may be configured.
+ *
+ * @return URL string.
+ */
     public abstract Property<String> getExclusionsFileUrl();
 }
