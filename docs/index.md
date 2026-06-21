@@ -23,27 +23,42 @@ This plugin allows you to create a set of rules and enforce them.
 
 # How to use it?
 
-1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`.
-2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`.
+1. Create <b>[rules.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/rules_example.xml)</b> (or name it differently) file and provide it in `pathToRulesFile`. Or fetch your rules file from remote URL by specifying `rulesFileUrl` parameter instead.
+2. Create <b>[exclusions.xml](https://github.com/htshame/naming-convention-liquibase-gradle-plugin/blob/main/docs/schema/example/exclusions_example.xml)</b> (or name it differently) file (not mandatory) and provide it in `pathToExclusionsFile`. Or fetch your exclusions file from remote URL by specifying `exclusionsFileUrl` parameter instead.
 3. Provide the path to the directory with Liquibase XML changeLogs in `changeLogDirectory`.
 4. Provide `false` in `shouldFailBuild` if you want to just see the warnings.
 5. Provide `true` in `shouldGenerateExclusions` if you want your exclusions file to be generated automatically.
 6. Put this into your `build.gradle`:
     ```groovy
     plugins {
-        id 'io.github.htshame.naming-convention-liquibase-gradle-plugin' version '1.0'
+        id 'io.github.htshame.naming-convention-liquibase-gradle-plugin' version '4.1'
     }
 
     validateLiquibaseChangeLog {
+        // path to file with naming rules
         pathToRulesFile = file("${projectDir}/src/main/resources/liquibaseNaming/ruleset.xml")
+        // OR provide URL to file with naming rules
+        // rulesFileUrl = 'https://raw.githubusercontent.com/htshame/naming-convention-liquibase-gradle-plugin/refs/heads/main/docs/schema/example/rules_example.xml'
+   
+        // path to file with exclusion rules
         pathToExclusionsFile = file("${projectDir}/src/main/resources/liquibaseNaming/exclusions.xml")
+        // OR provide URL to file with exclusion rules
+        // exclusionsFileUrl = 'https://raw.githubusercontent.com/htshame/naming-convention-liquibase-gradle-plugin/refs/heads/main/docs/schema/example/exclusions_example.xml'
+   
+        // path to your changeLog directory
         changeLogDirectory = file("${projectDir}/src/main/resources/db")
+   
+        // (optional) your changeLog format. Supported values: XML, YAML, YML, JSON. Default value is XML.
         changeLogFormat = 'xml'
+   
+        // (optional) set to 'false' if you don't want the build to fail if errors are found. Default value is 'true'
         shouldFailBuild = true
+   
+        // (optional) set to 'true' if you want exclusions file content to be generated automatically. Default value is 'false'
         shouldGenerateExclusions = true
     }
     ```
-6. Run your build.
+7. Run your build.
 
 ---
 
@@ -478,8 +493,8 @@ Not a single rule will be applied to `changelog_01.xml`. This file will be ignor
 To exclude the provided rule for the provided changeSet
 
 ```xml
-<changeSetExclusion fileName="changelog_04.xml" 
-                    changeSetId="changelog_04-1" changeSetAuthor="test" 
+<changeSetExclusion fileName="changelog_04.xml"
+                    changeSetId="changelog_04-1" changeSetAuthor="test"
                     rule="tag-must-exist"/>
 ```
 
