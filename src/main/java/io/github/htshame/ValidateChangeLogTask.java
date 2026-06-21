@@ -44,12 +44,13 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
     }
 
     /**
-     * Path to the XML file with rules. <b>Required.</b>
+     * Path to the XML file with rules. Exactly one of {@code pathToRulesFile} or {@code rulesFileUrl} must be set.
      *
      * @return file property
      */
     @PathSensitive(PathSensitivity.RELATIVE)
     @InputFile
+    @Optional
     public abstract RegularFileProperty getPathToRulesFile();
 
     /**
@@ -107,19 +108,21 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
     public abstract Property<String> getPluginVersion();
 
     /**
-     * Rules file URL.
+     * Rules file URL. Exactly one of {@code pathToRulesFile} or {@code rulesFileUrl} must be set. <b>Optional</b>
      *
      * @return url.
      */
     @Input
+    @Optional
     public abstract Property<String> getRulesFileUrl();
 
     /**
-     * Exclusions file URL.
+     * Exclusions file URL. <b>Optional</b>
      *
      * @return url.
      */
     @Input
+    @Optional
     public abstract Property<String> getExclusionsFileUrl();
 
     /**
@@ -179,8 +182,8 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
             return urlProperty.isPresent()
                     ? new URL(urlProperty.get()) : null;
         } catch (MalformedURLException e) {
-            getLogger().error("Error parsing URL: {}", urlProperty.get());
-            throw new GradleException("Error parsing URL: " + urlProperty.get());
+            getLogger().error("Error parsing URL: {}", urlProperty.get(), e);
+            throw new GradleException("Error parsing URL: " + urlProperty.get(), e);
         }
     }
 
@@ -261,7 +264,7 @@ public abstract class ValidateChangeLogTask extends DefaultTask {
                 throw new GradleException(INVALID_PATH + exclusionsFile);
             }
         }
-        if ((!getPathToRulesFile().isPresent()) == (!getRulesFileUrl().isPresent())) {
+        if (getPathToRulesFile().isPresent() == getRulesFileUrl().isPresent()) {
             throw new GradleException(
                     "Exactly one of 'pathToRulesFile' or 'rulesFileUrl' parameters must be present");
         }
