@@ -74,11 +74,11 @@ public abstract class ValidateChangeLogExtension {
      */
     public abstract Property<Boolean> getShouldGenerateExclusions();
 
-    /**
-     * Get rules file URL.
-     *
-     * @return url.
-     */
+/**
+ * Rules file URL. Exactly one of {@code pathToRulesFile} or {@code rulesFileUrl} must be configured.
+ *
+ * @return URL string.
+ */
     public abstract Property<String> getRulesFileUrl();
 
 /**
