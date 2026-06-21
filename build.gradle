@@ -24,8 +24,6 @@ java {
     withJavadocJar()
 }
 
-// Equivalent to the 'generateSources' Maven profile.
-// Activated by passing -PgenerateSources on the command line.
 if (project.hasProperty('generateSources')) {
     java {
         withSourcesJar()
