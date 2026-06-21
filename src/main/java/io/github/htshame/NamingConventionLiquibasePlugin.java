@@ -1,5 +1,6 @@
 package io.github.htshame;
 
+import io.github.htshame.enums.ChangeLogFormatEnum;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskProvider;
@@ -14,6 +15,13 @@ import org.gradle.api.tasks.TaskProvider;
 public class NamingConventionLiquibasePlugin implements Plugin<Project> {
 
     /**
+     * Default constructor.
+     */
+    public NamingConventionLiquibasePlugin() {
+
+    }
+
+    /**
      * Applies the plugin to the given project.
      *
      * @param project the target Gradle project.
@@ -24,7 +32,7 @@ public class NamingConventionLiquibasePlugin implements Plugin<Project> {
                 .create("validateLiquibaseChangeLog", ValidateChangeLogExtension.class);
 
         extension.getShouldFailBuild().convention(true);
-        extension.getChangeLogFormat().convention("xml");
+        extension.getChangeLogFormat().convention(ChangeLogFormatEnum.XML.getValue());
         extension.getShouldGenerateExclusions().convention(false);
 
         final TaskProvider<ValidateChangeLogTask> validateTask =
@@ -41,6 +49,8 @@ public class NamingConventionLiquibasePlugin implements Plugin<Project> {
                             task.getShouldFailBuild().set(extension.getShouldFailBuild());
                             task.getChangeLogFormat().set(extension.getChangeLogFormat());
                             task.getShouldGenerateExclusions().set(extension.getShouldGenerateExclusions());
+                            task.getRulesFileUrl().set(extension.getRulesFileUrl());
+                            task.getExclusionsFileUrl().set(extension.getExclusionsFileUrl());
                             final Package pluginPackage = NamingConventionLiquibasePlugin.class.getPackage();
                             final String pluginVersion =
                                     pluginPackage != null ? pluginPackage.getImplementationVersion() : null;

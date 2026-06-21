@@ -7,9 +7,9 @@ and [Semantic Versioning](https://semver.org/).
 
 ---
 
-## Version 1.0
+## Version 4.1
 
 Initial implementation
 
-- This version replicates functionality of [naming-conventioon-liquibase-maven-plugin](https://htshame.github.io/naming-convention-liquibase-maven-plugin/). See [changeLog](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/CHANGELOG.md) for reference.
+- This version replicates functionality of [naming-convention-liquibase-maven-plugin](https://htshame.github.io/naming-convention-liquibase-maven-plugin/) v4.1. See [changeLog](https://github.com/htshame/naming-convention-liquibase-maven-plugin/blob/main/CHANGELOG.md) for reference.
 

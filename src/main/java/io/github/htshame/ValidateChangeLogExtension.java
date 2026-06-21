@@ -18,6 +18,13 @@ import org.gradle.api.provider.Property;
 public abstract class ValidateChangeLogExtension {
 
     /**
+     * Default constructor.
+     */
+    public ValidateChangeLogExtension() {
+
+    }
+
+    /**
      * Path to the XML file with naming-convention rules. <b>Required.</b>
      *
      * @return file property
@@ -66,4 +73,18 @@ public abstract class ValidateChangeLogExtension {
      * @return boolean property
      */
     public abstract Property<Boolean> getShouldGenerateExclusions();
+
+/**
+ * Rules file URL. Exactly one of {@code pathToRulesFile} or {@code rulesFileUrl} must be configured.
+ *
+ * @return URL string.
+ */
+    public abstract Property<String> getRulesFileUrl();
+
+/**
+ * Exclusions file URL. Only one of {@code pathToExclusionsFile} or {@code exclusionsFileUrl} may be configured.
+ *
+ * @return URL string.
+ */
+    public abstract Property<String> getExclusionsFileUrl();
 }

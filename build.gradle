@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'io.github.htshame'
-version = '1.0'
+version = '4.1'
 def releaseProfile = project.hasProperty('release')
 
 def compatibilityJavaVersion = providers.gradleProperty('javaCompatibilityVersion')
@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.htshame:ncl-core:4.0'
+    implementation 'io.github.htshame:ncl-core:4.1'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -116,7 +116,7 @@ jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.21
+                minimum = 1.0
             }
         }
     }
