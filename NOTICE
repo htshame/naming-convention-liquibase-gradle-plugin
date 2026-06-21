@@ -1,5 +1,4 @@
 This product includes software developed by:
-- SnakeYAML (https://bitbucket.org/snakeyaml/snakeyaml/src/master/)
-- jackson-databind (https://github.com/FasterXML/jackson-databind)
+- ncl-core (https://github.com/htshame/naming-convention-liquibase-maven-plugin)
 
 See each dependency's LICENSE and NOTICE files for details.
