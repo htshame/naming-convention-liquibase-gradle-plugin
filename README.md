@@ -10,8 +10,7 @@ Just use <b>naming-convention-liquibase-gradle-plugin</b>!
 
 This plugin allows you to create a set of rules and enforce them.
 
-- If someone names the index 'customer_external_id_idx' instead of 'idx_customer_external_id' (or vice versa), the build
-  will fail!
+- If someone names the index 'customer_external_id_idx' instead of 'idx_customer_external_id' (or vice versa), the build will fail!
 
 - If someone names the table 'customer-metadata' instead of 'customer_metadata' (or vice versa), the build will fail!
 
