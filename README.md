@@ -18,6 +18,8 @@ This plugin allows you to create a set of rules and enforce them.
 
 - If someone... - well, you get the point!
 
+[Link](https://plugins.gradle.org/plugin/io.github.htshame.naming-convention-liquibase-gradle-plugin) to Gradle Plugins.
+
 **Maven** version is available here: [naming-convention-liquibase-maven-plugin](https://htshame.github.io/naming-convention-liquibase-maven-plugin/)
 
 ---
