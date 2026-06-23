@@ -34,7 +34,7 @@ This plugin allows you to create a set of rules and enforce them.
 1. Put this into your `build.gradle`:
     ```groovy
     plugins {
-        id 'io.github.htshame.naming-convention-liquibase-gradle-plugin' version '4.1'
+        id 'io.github.htshame.naming-convention-liquibase-gradle-plugin' version '4.1.1'
     }
 
     validateLiquibaseChangeLog {
